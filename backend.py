@@ -1,3 +1,5 @@
+import random
+
 board = [
     [-4,-3,-2,-5,-6,-2,-3,-4],
     [-1,-1,-1,-1,-1,-1,-1,-1],
@@ -36,22 +38,26 @@ black_king = -6
 
 class Board:
     def __init__(self):
+        self.available_bot_pieces = None
         self.selected_piece = None
         self.selected_piece_pos = None
         self.possible_moves_list = None
         self.board = board
+        self.available_bot_moves = None
 
     def possible_moves(self, piece: int, pos_x: int, pos_y: int) -> list:
         possible_moves_list = []
         if piece == white_pawn:
-            if pos_y == 6:
+            if pos_y == 6 and board[pos_y-2][pos_x] == 0:
                 possible_moves_list.append([pos_y - 2, pos_x])
             if self.board[pos_y - 1][pos_x] == 0:
                 possible_moves_list.append([pos_y - 1, pos_x])
-            if self.board[pos_y - 1][pos_x - 1] < 0:
-                possible_moves_list.append([pos_y - 1, pos_x - 1])
-            if self.board[pos_y - 1][pos_x + 1] < 0:
-                possible_moves_list.append([pos_y - 1, pos_x + 1])
+            if pos_x + 1 < 8:
+                if self.board[pos_y - 1][pos_x + 1] < 0:
+                    possible_moves_list.append([pos_y - 1, pos_x + 1])
+            if pos_x - 1 > -1:
+                if self.board[pos_y - 1][pos_x - 1] < 0:
+                    possible_moves_list.append([pos_y - 1, pos_x - 1])
 
         if piece == white_bishop:
             moves_top_left = [[-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]]
@@ -61,9 +67,9 @@ class Board:
 
             for move in moves_top_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -81,9 +87,9 @@ class Board:
 
             for move in moves_bottom_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -91,9 +97,9 @@ class Board:
 
             for move in moves_bottom_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -107,7 +113,7 @@ class Board:
 
             for move in moves:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] <= 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] <= 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
 
         if piece == white_rook:
@@ -118,9 +124,9 @@ class Board:
 
             for move in moves_down:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -128,9 +134,9 @@ class Board:
 
             for move in moves_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -138,9 +144,9 @@ class Board:
 
             for move in moves_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -148,9 +154,9 @@ class Board:
 
             for move in moves_up:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -164,9 +170,9 @@ class Board:
 
             for move in moves_top_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -174,9 +180,9 @@ class Board:
 
             for move in moves_top_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -184,9 +190,9 @@ class Board:
 
             for move in moves_bottom_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -194,9 +200,9 @@ class Board:
 
             for move in moves_bottom_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -209,9 +215,9 @@ class Board:
 
             for move in moves_down:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -219,9 +225,9 @@ class Board:
 
             for move in moves_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -229,9 +235,9 @@ class Board:
 
             for move in moves_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -239,9 +245,9 @@ class Board:
 
             for move in moves_up:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] < 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] < 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -254,18 +260,20 @@ class Board:
 
             for move in moves:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] <= 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] <= 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
 
         if piece == black_pawn:
-            if pos_y == 1:
+            if pos_y == 1 and board[pos_y+2][pos_x] == 0:
                 possible_moves_list.append([pos_y + 2, pos_x])
             if self.board[pos_y + 1][pos_x] == 0:
                 possible_moves_list.append([pos_y + 1, pos_x])
-            if self.board[pos_y + 1][pos_x + 1] > 0:
-                possible_moves_list.append([pos_y - 1, pos_x - 1])
-            if self.board[pos_y + 1][pos_x - 1] > 0:
-                possible_moves_list.append([pos_y + 1, pos_x - 1])
+            if pos_x + 1 < 8:
+                if self.board[pos_y + 1][pos_x + 1] > 0:
+                    possible_moves_list.append([pos_y + 1, pos_x + 1])
+            if pos_x - 1 > -1:
+                if self.board[pos_y + 1][pos_x - 1] > 0:
+                    possible_moves_list.append([pos_y + 1, pos_x - 1])
 
         if piece == black_bishop:
             moves_top_left = [[-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]]
@@ -275,9 +283,9 @@ class Board:
 
             for move in moves_top_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -285,9 +293,9 @@ class Board:
 
             for move in moves_top_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -295,9 +303,9 @@ class Board:
 
             for move in moves_bottom_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -305,9 +313,9 @@ class Board:
 
             for move in moves_bottom_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -321,7 +329,7 @@ class Board:
 
             for move in moves:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] >= 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] >= 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
 
         if piece == black_rook:
@@ -332,9 +340,9 @@ class Board:
 
             for move in moves_down:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -342,9 +350,9 @@ class Board:
 
             for move in moves_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -352,9 +360,9 @@ class Board:
 
             for move in moves_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -362,9 +370,9 @@ class Board:
 
             for move in moves_up:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -378,9 +386,9 @@ class Board:
 
             for move in moves_top_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -388,9 +396,9 @@ class Board:
 
             for move in moves_top_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -398,9 +406,9 @@ class Board:
 
             for move in moves_bottom_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -408,9 +416,9 @@ class Board:
 
             for move in moves_bottom_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -423,9 +431,9 @@ class Board:
 
             for move in moves_down:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -433,9 +441,9 @@ class Board:
 
             for move in moves_left:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -443,9 +451,9 @@ class Board:
 
             for move in moves_right:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -453,9 +461,9 @@ class Board:
 
             for move in moves_up:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] == 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] == 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
-                    elif board[pos_y + move[0]][pos_x + move[1]] > 0:
+                    elif self.board[pos_y + move[0]][pos_x + move[1]] > 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
                         break
                     else:
@@ -468,7 +476,7 @@ class Board:
 
             for move in moves:
                 if -1 < pos_y + move[0] < 8 and -1 < pos_x + move[1] < 8:
-                    if board[pos_y + move[0]][pos_x + move[1]] >= 0:
+                    if self.board[pos_y + move[0]][pos_x + move[1]] >= 0:
                         possible_moves_list.append([pos_y + move[0], pos_x + move[1]])
 
         self.possible_moves_list = possible_moves_list
@@ -484,6 +492,26 @@ class Board:
             self.selected_piece = None
             return True
         return False
+
+    def ai_move(self):
+        legal_moves = []
+
+        for y in range(8):
+            for x in range(8):
+                piece = self.board[y][x]
+                if piece < 0:
+                    moves = self.possible_moves(piece, x, y)
+                    for move in moves:
+                        legal_moves.append((x, y, move))
+
+        if not legal_moves:
+            return  # no moves available
+
+        start_x, start_y, move = random.choice(legal_moves)
+
+        self.possible_moves(self.board[start_y][start_x], start_x, start_y)
+        self.move_piece(move[1], move[0])
+
 
     def evolve_pawn(self):
         return

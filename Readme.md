@@ -1,1 +1,3 @@
-Chess pieces from: https://greenchess.net/info.php?item=downloads
+Chess pieces from: https://greenchess.net/info.php?item=downloads \
+Sound Effect by <a href="https://pixabay.com/users/leobathro-37265514/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=158172">Leobathro</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=158172">Pixabay</a> \
+Background Music: https://youtu.be/71Gt46aX9Z4?si=VDZ2_tB8GKpJEELn

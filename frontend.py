@@ -40,10 +40,12 @@ def main_loop():
     possible_moves = []
     moved_piece = False
     pygame.mixer.init()
-    pygame.mixer.music.load('audio/Gary B.B. Coleman - The Sky is Crying.ogg')
+    pygame.mixer.music.load('audio/Gary B.B. Coleman - The Sky is Crying.mp3')
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
+    move_piece_sound_effect = pygame.mixer.Sound('audio/move_piece.mp3')
     player_turn = 1
+    ai_move_time = None
 
     while running:
         for event in pygame.event.get():
@@ -71,6 +73,16 @@ def main_loop():
                     selected_piece = None
 
         screen.fill("purple")
+
+        if player_turn == 2:
+            if ai_move_time is None:
+                ai_move_time = pygame.time.get_ticks()  # start thinking timer
+
+            elif pygame.time.get_ticks() - ai_move_time > 1000:  # 1000ms = 1 second
+                board.ai_move()
+                pygame.mixer.Sound.play(move_piece_sound_effect)
+                player_turn = 1
+                ai_move_time = None
 
         for idx_y, y in enumerate(board.board):
             cell_color = PLAYER_1_COLOR if cell_color == PLAYER_2_COLOR else PLAYER_2_COLOR
@@ -125,6 +137,7 @@ def main_loop():
                     pygame.draw.circle(screen, POSSIBLE_MOVE_COLOR, (possible_y, possible_x), POSSIBLE_MOVE_SIZE)
 
         if moved_piece:
+            pygame.mixer.Sound.play(move_piece_sound_effect)
             selected_x = None
             selected_y = None
             selected_piece = None
