@@ -43,6 +43,7 @@ def main_loop():
     pygame.mixer.music.load('audio/Gary B.B. Coleman - The Sky is Crying.ogg')
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
+    player_turn = 1
 
     while running:
         for event in pygame.event.get():
@@ -129,6 +130,7 @@ def main_loop():
             selected_piece = None
             possible_moves = []
             moved_piece = False
+            player_turn = 2 if player_turn == 1 else 1
 
         pygame.display.update()
         clock.tick(60)
